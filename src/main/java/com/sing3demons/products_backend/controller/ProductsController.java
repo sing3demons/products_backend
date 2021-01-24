@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sing3demons.products_backend.Exeptions.ProductNotFoundException;
 import com.sing3demons.products_backend.models.Product;
 
 @RestController
@@ -31,7 +32,8 @@ public class ProductsController {
 	// --> GET /:id
 	@GetMapping("{id}")
 	public Product findOne(@PathVariable long id) {
-		return products.stream().filter(result -> result.getId() == id).findFirst().orElseThrow();
+		return products.stream().filter(result -> result.getId() == id).findFirst()
+				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 
 	// --> GET http://localhost:8080/say?firstName=kpsing
@@ -62,7 +64,9 @@ public class ProductsController {
 			result.setCategory(product.getCategory());
 //			data = result;
 		}, () -> {
+			throw new ProductNotFoundException(id);
 		});
 
 	}
+
 }
