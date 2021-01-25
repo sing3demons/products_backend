@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sing3demons.products_backend.Exeptions.ProductNotFoundException;
+import com.sing3demons.products_backend.Exeptions.ValidationException;
 import com.sing3demons.products_backend.models.Product;
 import com.sing3demons.products_backend.services.StorageSevice;
 
@@ -54,7 +58,12 @@ public class ProductsController {
 	// POST
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping()
-	public Product creacte(ProductRequest productRequest) {
+	public Product creacte(@Valid ProductRequest productRequest, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			bindingResult.getFieldErrors().stream().forEach(fieldError -> {
+				throw new ValidationException(fieldError.getField() + ": " + fieldError.getDefaultMessage());
+			});
+		}
 		String fileName = storageSevice.storage(productRequest.getImage());
 
 		Product data = new Product(counter.incrementAndGet(), productRequest.getName(), productRequest.getDesc(),

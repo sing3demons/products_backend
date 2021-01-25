@@ -26,4 +26,10 @@ public class ExceptionAdvice {
 	String hadlerMaxUploadSize(MaxUploadSizeExceededException ex) {
 		return "Maximum  upload size";
 	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	String hadlerValidation(ValidationException ex) {
+		return ex.getMessage();
+	}
 }
