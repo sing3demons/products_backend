@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sing3demons.products_backend.Exeptions.ProductNotFoundException;
 import com.sing3demons.products_backend.models.Product;
+import com.sing3demons.products_backend.services.StorageSevice;
 
 @RestController
 @RequestMapping("api/v1/products")
@@ -25,6 +26,11 @@ public class ProductsController {
 
 	private final AtomicLong counter = new AtomicLong();
 	private List<Product> products = new ArrayList<>();
+	private StorageSevice storageSevice;
+
+	public ProductsController(StorageSevice storageSevice) {
+		this.storageSevice = storageSevice;
+	}
 
 	// --> GET http://localhost:8080 ,http://localhost:8080/?name=sing
 	@GetMapping("")
@@ -48,9 +54,11 @@ public class ProductsController {
 	// POST
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping()
-	public Product creacte(@RequestBody Product product) {
-		Product data = new Product(counter.incrementAndGet(), product.getName(), product.getDesc(), product.getImage(),
-				product.getPrice(), product.getCategory());
+	public Product creacte(ProductRequest productRequest) {
+		String fileName = storageSevice.storage(productRequest.getImage());
+
+		Product data = new Product(counter.incrementAndGet(), productRequest.getName(), productRequest.getDesc(),
+				fileName, productRequest.getPrice(), productRequest.getCategory());
 
 		products.add(data);
 		return data;
