@@ -26,6 +26,7 @@ import com.sing3demons.products_backend.services.StorageSevice;
 
 @RestController
 @RequestMapping("api/v1/products")
+//@CrossOrigin("http://localhost:3000")
 public class ProductsController {
 
 	private final AtomicLong counter = new AtomicLong();
